@@ -1,14 +1,13 @@
 import numpy as np
+import sys
 
-def extract_ismrmrd_parameters_from_headers(head, hdr, table_position_offset):
+def extract_ismrmrd_parameters_from_headers(head, hdr):
     """
 
     Parameters
     ----------
     head : read imsrmrd dataset head (dataset.head)
     hdr : deserialized ismrmrd xml dataset file
-    table_position_offset : offset of the table position
-
     Returns
     -------
     function that returns a structure h which contains parameters needed for conversion function
@@ -35,6 +34,15 @@ def extract_ismrmrd_parameters_from_headers(head, hdr, table_position_offset):
 
     if (hdr.encoding[0].reconSpace.matrixSize.z == 0):
         hdr.encoding[0].reconSpace.matrixSize.z = 1
+
+    #find indices of GlobalTableProsTra fields
+    idx_TablePosTra = [i for i in range(len(hdr.userParameters.userParameterLong)) if  hdr.userParameters.userParameterLong[i].name == 'GlobalTablePosTra']
+    if idx_TablePosTra == []:
+        print('Missing GlobalTablePosTra parameters in the ismrmrd dataset. Check if you use the parameter maps in the folder')
+        print("Exit with code 0.")
+        sys.exit(0)
+    else :
+        table_position_offset=int(hdr.userParameters.userParameterLong[idx_TablePosTra[0]].value_)
 
 
     #ImagePositionPatient of first slice (right corner position of first and last slice)

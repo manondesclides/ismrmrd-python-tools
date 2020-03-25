@@ -58,5 +58,7 @@ target/
 *.h5
 *.dat
 
+
+.idea/
 # Emacs backup files
 *~
